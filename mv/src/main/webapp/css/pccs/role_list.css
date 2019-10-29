@@ -1,0 +1,19 @@
+.laytable-cell-1-id {
+	width: 80px;
+}
+
+.laytable-cell-1-roleName {
+	width: 100px;
+}
+
+.laytable-cell-1-handle {
+	width: 250px;
+}
+
+tr,td {
+	text-align: center;
+}
+
+.layui-table-cell {
+	text-align: center;
+}

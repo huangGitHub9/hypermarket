@@ -1,0 +1,28 @@
+.remove_item_remove{
+	display: inline-block;
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	position: relative;
+	left: 128px;
+	top: -230px;
+	display: none;
+	border-radius:15px; width:30px; height:30px; border:black 2px solid;
+	background-color:#000000;
+	text-decoration:none;
+	font-size: 3em;
+	color:orange;
+}
+.remove_item_remove:hover{
+	color:white;
+	text-decoration:none;
+}
+.delIcon{
+	position: relative;
+	top: -5px;
+}
+
+
+
+   

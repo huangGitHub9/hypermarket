@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xu.dygl.movie.dao.MovieDao">
+    <resultMap id="movieMap" type="movie">
+        <id property="movieId" column="movie_id"/>
+        <result property="movieTime" column="movie_time"></result>
+        <result property="movieClickCount" column="movie_clickCount"></result>
+        <result property="movieDirector" column="movie_director"></result>
+        <result property="movieProtagonist" column="movie_protagonist"></result>
+        <result property="movieIntro" column="movie_intro"></result>
+        <result property="movieName" column="movie_name"></result>
+        <result property="moviePath" column="movie_Path"></result>
+        <result property="movieImgName" column="movie_imgName"></result>
+        <result property="movieImgPath" column="movie_imgPath"></result>
+
+        <!--跟电影级别是多对一-->
+        <association property="movieGrade" javaType="cn.xu.dygl.movieGrade.entity.MovieGrade">
+            <id property="movieGradeId" column="movieGrade_id"/>
+            <result property="movieGradeName" column="movieGrade_name"/>
+            <result property="movieGradeImgPath" column="movieGrade_imgPath"/>
+        </association>
+    </resultMap>
+
+
+    <!--添加电影-->
+    <insert id="add" parameterType="movie">
+        insert into t_movie(movie_id,movie_time,movie_director
+                                ,movie_protagonist,movie_intro,movie_name,movie_Path
+                                ,movie_imgName,movie_imgPath,movieGrade_id)
+        values(#{movieId},#{movieTime},#{movieDirector},#{movieProtagonist},
+              #{movieIntro},#{movieName},#{moviePath},#{movieImgName},
+              #{movieImgPath},#{movieGrade.movieGradeId})
+    </insert>
+
+    <!--给第三方表添加他们的关联信息-->
+    <insert id="addMMoveType" parameterType="Map">
+      insert into t_mmovietype (mmovieType_id,movie_id,movieType_id)
+      values(#{mmovieTypeId},#{movieId},#{movieTypeId})
+    </insert>
+
+    <!--根据movie_id删除第三方的信息-->
+    <delete id="delMMvoieTypeByMovieId" parameterType="Map">
+        delete from t_mmovietype
+        where movie_id = #{movieId}
+    </delete>
+
+    <!--删除电影-->
+    <update id="delete" parameterType="string">
+        update t_movie set movie_delState = 1
+        where movie_id = #{movieId}
+    </update>
+
+    <!--更新电影类型-->
+    <update id="update" parameterType="Map">
+        update t_movie set <include refid="updateKV"/>
+        where movie_id = #{movieId}
+    </update>
+
+    <!--查询所有的电影类型-->
+    <select id="findAll" resultMap="movieMap">
+        select *
+        from t_movie tm ,t_moviegrade tmg
+        where tm.movieGrade_id = tmg.movieGrade_id
+    </select>
+
+    <!--根据id来查询该电影类型-->
+    <select id="findObjectById" parameterType="string" resultMap="movieMap">
+        select *
+        from t_movie tm,t_moviegrade tmg
+        where 		tm.movie_id = #{movieId}
+				and tm.movieGrade_id = tmg.movieGrade_id
+    </select>
+
+    <!--更新点击次数-->
+    <update id="updateClickCounts" parameterType="string">
+      update t_movie set movie_clickCount = movie_clickCount+1
+      where movie_id = #{movieId}
+    </update>
+
+    <!--电影名不能重复-->
+    <select id="findMovieByName" resultType="int" parameterType="string">
+        select count(*)
+        from t_movie
+        where movie_name = #{movieName}
+    </select>
+
+    <!--电影名不能重复-->
+    <select id="findMoiveExcludeSelf" resultType="int" parameterType="Map">
+        select count(*)
+        from t_movie
+        where movie_name = #{movieName}
+              and movie_id !=#{movieId}
+    </select>
+
+    <!--分页条件查询-->
+    <select id="findAllByPaging" parameterType="Map" resultMap="movieMap">
+        select tm.*,tmg.*
+        from <include refid="findAllByPagingFrom"/>
+        <include refid="findAllByPagingWhere"/>
+        order by tm.movie_time
+        limit #{pStart},#{pSize}
+    </select>
+
+    <!--分页查询的总记录数-->
+    <select id="getTotalCounts" parameterType="Map" resultType="int">
+        select count(*)
+        from <include refid="findAllByPagingFrom"/>
+        <include refid="findAllByPagingWhere"/>
+    </select>
+
+    <!--查询用户的收藏视频根据用户的id-->
+    <select id="findCollectMsByUId" parameterType="string" resultMap="movieMap">
+        select tm.*
+        from t_user tu ,t_collectbox tc , t_movie tm
+        where
+                tu.user_id = #{userId}
+                and tu.user_id = tc.user_id
+                and tm.movie_id = tc.movie_id
+    </select>
+
+    <!--查询用户收集的电影并实现分页-->
+    <select id="findCMAndPaging" parameterType="Map" resultMap="movieMap">
+        select tm.*
+        from t_user tu ,t_collectbox tc , t_movie tm
+        where
+                tu.user_id = #{userId}
+                and tu.user_id = tc.user_id
+                and tm.movie_id = tc.movie_id
+                limit #{pStart},#{pSize}
+    </select>
+
+    <!--用户收藏电影的总记录数-->
+    <select id="getCollectTC" parameterType="Map" resultType="int">
+        select count(*)
+        from t_user tu ,t_collectbox tc , t_movie tm
+        where
+                tu.user_id = #{userId}
+                and tu.user_id = tc.user_id
+                and tm.movie_id = tc.movie_id
+    </select>
+
+
+
+
+
+
+
+
+
+
+    <!--分页查询的表-->
+    <sql id="findAllByPagingFrom">
+            <if test="movieTypeId !=null">
+                t_mmovietype tmmp,t_movietype tmp,t_movie tm,t_moviegrade tmg
+            </if >
+            <if test="movieTypeId ==null">
+                t_movie tm,t_moviegrade tmg
+            </if>
+    </sql>
+
+    <!--电影分页查询的条件-->
+    <sql id="findAllByPagingWhere">
+        <where>
+            <!--test：是map中的key-->
+            <if test="movieName !=null">
+                and tm.movie_name like #{movieName}
+            </if>
+            <if test="movieDirector !=null">
+                and tm.movie_director like #{movieDirector}
+            </if>
+            <if test="movieProtagonist !=null">
+                and tm.movie_protagonist like #{movieProtagonist}
+            </if>
+            <if test="startTime !=null">
+                and tm.movie_time &gt;= #{startTime}
+            </if>
+            <if test="endTime !=null">
+                and tm.movie_time &lt;= #{endTime}
+            </if>
+            <if test="movieTypeId != null">
+                and tmmp.movieType_id = #{movieTypeId}
+                and tmmp.movieType_id = tmp.movieType_id
+                and tmmp.movie_id = tm.movie_id
+            </if>
+            <if test="movieGradeId !=null">
+                and tm.movieGrade_id = #{movieGradeId}
+            </if>
+                and tm.movieGrade_id = tmg.movieGrade_id
+        </where>
+    </sql>
+
+
+
+
+
+    <!--动态更新-->
+    <sql id="updateKV">
+        <trim suffixOverrides="," >
+
+            <if test="movieTime != null">
+                movie_time = #{movieTime},
+            </if>
+            <if test="movieDirector != null">
+                movie_director = #{movieDirector},
+            </if>
+            <if test=" movieProtagonist != null">
+                movie_protagonist = #{movieProtagonist},
+            </if>
+            <if test=" movieIntro != null">
+                movie_intro= #{movieIntro},
+            </if>
+            <if test=" movieName != null">
+                movie_name=#{movieName} ,
+            </if>
+            <if test="moviePath != null">
+                movie_Path= #{moviePath},
+            </if>
+            <if test="movieImgName != null">
+                movie_imgName = #{movieImgName},
+            </if>
+            <if test="movieImgPath != null">
+                movie_imgPath  = #{movieImgPath},
+            </if>
+            <if test="movieGrade != null">
+                movieGrade_id  = #{movieGrade.movieGradeId},
+            </if>
+        </trim>
+    </sql>
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

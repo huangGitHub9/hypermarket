@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xu.dygl.user.dao.UserDao">
+    <resultMap id="userMap" type="user">
+        <id property="userId" column="user_id"/>
+        <result property="userName" column="user_name"></result>
+        <result property="userPassword" column="user_password"></result>
+        <result property="userBirthday" column="user_birthday"></result>
+        <result property="userGender" column="user_gender"></result>
+        <result property="userAge" column="user_age"></result>
+        <result property="userHeadImgPath" column="user_headImgPath"></result>
+        <result property="userHeadImgName" column="user_headImgName"></result>
+
+        <result property="userMemStartTime" column="user_memStartTime"></result>
+        <result property="userMemEndTime" column="user_memEndTime"></result>
+
+        <!--跟套餐是多对一-->
+    <!--    <association property="memPackage" javaType="cn.xu.dygl.memPackage.entity.MemPackage">
+            <id property="memPackageId" column="memPackage_id"/>
+            <result property="memPackageMonth" column="memPackage_month"/>
+            <result property="memPackagePrice" column="memPackage_price"/>
+            <result property="memPackageDetail" column="memPackage_detail"/>
+        </association>-->
+
+        <!--跟角色是多对多-->
+        <collection property="roleList" ofType="cn.xu.dygl.role.entity.Role">
+            <id property="roleId" column="role_id"/>
+            <result property="roleName" column="role_name"/>
+        </collection>
+    </resultMap>
+
+    <sql id="addK">
+          <trim suffixOverrides=",">
+              <if test="userHeadImgName != null">
+                  user_headImgName,
+              </if>
+              <if test="userMemStartTime != null">
+                  user_memStartTime,
+              </if>
+              <if test="userMemEndTime != null">
+                  user_memEndTime,
+              </if>
+          </trim>
+    </sql>
+    <sql id="addV">
+        <trim suffixOverrides=",">
+            <if test="userHeadImgName != null">
+                #{userHeadImgName},
+            </if>
+            <if test="userMemStartTime != null">
+                #{userMemStartTime},
+            </if>
+            <if test="userMemEndTime != null">
+                #{userMemEndTime},
+            </if>
+        </trim>
+    </sql>
+
+
+    <!--动态用户添加 -->
+    <insert id="add" parameterType="user" >
+        insert into t_user(user_id,user_name,user_password,user_birthday,user_gender,
+                            user_age,user_headImgPath, user_headImgName, user_memStartTime, user_memEndTime)
+        values(#{userId},#{userName},#{userPassword},#{userBirthday},#{userGender},
+                #{userAge},#{userHeadImgPath}, #{userHeadImgName}, #{userMemStartTime}, #{userMemEndTime})
+    </insert>
+
+    <!--删除用户-->
+    <delete id="delete" parameterType="string">
+      delete from t_user
+      where user_id = #{userId}
+    </delete>
+
+    <sql id="updateKV">
+        <trim suffixOverrides=",">
+            <if test="userHeadImgName != null">
+                user_headImgName = #{userHeadImgName},
+            </if>
+            <if test="userMemStartTime != null">
+                user_memStartTime = #{userMemStartTime},
+            </if>
+            <if test="userMemEndTime != null">
+                user_memEndTime =  #{userMemEndTime},
+            </if>
+        </trim>
+    </sql>
+
+    <!--动态更新用户-->
+    <update id="update" parameterType="user">
+        update t_user set user_name=#{userName},user_password=#{userPassword},
+        user_birthday=#{userBirthday},user_gender=#{userGender},
+        user_age=#{userAge},user_headImgPath=#{userHeadImgPath},
+        <include refid="updateKV"/>
+        where user_id = #{userId}
+    </update>
+
+    <!--查询所有的用户 数据的列明和字段属名对应-->
+    <select id="findAll" resultMap="userMap">
+        select *
+        from t_user
+        where user_delState != 1
+    </select>
+
+    <!--vip用户ID来查询该用户-->
+    <select id="findObjectVipById" resultMap="userMap" parameterType="string">
+        select tu.*,tr.*
+        from t_user tu,t_roleu tru,t_role tr
+        where     tu.user_id = #{userId}
+			  and tu.user_id = tru.user_id
+			  and tr.role_id = tru.role_id
+    </select>
+
+    <!--vip用户ID来查询该用户-->
+    <select id="findObjectById" resultMap="userMap" parameterType="string">
+        select tu.*,tr.*
+        from t_user tu,t_roleu tru,t_role tr
+        where     tu.user_id = #{userId}
+              and tu.user_id = tru.user_id
+              and tr.role_id = tru.role_id
+    </select>
+
+    <!--查询用户根据用户的名字和密码-->
+    <select id="findUserByNameAndPassword" resultMap="userMap" parameterType="Map" >
+        select *
+        from t_user
+        where user_name = #{userName} and user_password = #{userPassword} and  user_delState != 1
+    </select>
+
+    <select id="findUserExcludeSelf" resultType="int" parameterType="Map">
+        select count(*)
+        from t_user
+        where user_name = #{userName} and user_password = #{userPassword}
+              and  user_id != #{userId}
+              and  user_delState != 1
+    </select>
+
+    <!--分页条件查询 用户名和性别-->
+    <select id="findAllByPaging" parameterType="Map" resultMap="userMap">
+        select *
+        from t_user tu,t_role tr,t_roleu tru
+        <where>
+            and tu.user_id = tru.user_id
+            and tr.role_id = tru.role_id
+            and  user_delState != 1
+            <!--test：是map中的key-->
+            <if test="userName !=null">
+                 and tu.user_name like #{userName}
+            </if>
+            <if test="userGender !=null">
+                  and tu.user_gender = #{userGender}
+            </if>
+            <if test="roleId !=null">
+                and tr.role_id = #{roleId}
+            </if>
+        </where>
+        limit #{pCur},#{pSize}
+    </select>
+
+    <select id="getTotalCounts" parameterType="Map" resultType="int">
+        select count(*)
+        from t_user tu,t_role tr,t_roleu tru
+        <where>
+            and tu.user_id = tru.user_id
+            and tr.role_id = tru.role_id
+            and  user_delState != 1
+            <!--test：是map中的key-->
+            <if test="userName !=null">
+                and tu.user_name like #{userName}
+            </if>
+            <if test="userGender !=null">
+                and tu.user_gender = #{userGender}
+            </if>
+            <if test="roleId !=null">
+                and tr.role_id = #{roleId}
+            </if>
+        </where>
+    </select>
+
+
+    <!--定期去查询数据库中用户的状态-->
+
+    <!--删除该用户的会员的角色 通过 用户id和角色id-->
+    <delete id="delUVIPByURId" parameterType="Map">
+        delete from t_roleu
+        where user_id = #{userId} and role_id = #{roleId}
+    </delete>
+
+    <!--更新该用户会员的状态-->
+    <update id="updateUVipState" parameterType="string">
+        update set userMemStartTime = null ,userMemEndTime = null
+        where user_id = ${userId}
+    </update>
+
+
+
+
+
+    <!--插入用户收藏的电影的信息-->
+    <insert id="collectMovie" parameterType="Map">
+        insert into t_collectbox(collectBox_id,collectBox_time,user_id,movie_id)
+        values(#{collectBoxId},#{collectBoxTime},#{userId},#{movieId})
+    </insert>
+
+    <!--根据用户id和视频id来查收藏记录-->
+    <select id="findCollectMByUIdAndMId" parameterType="Map" resultType="int" >
+          select count(*)
+          from t_collectbox
+          where user_id = #{userId}
+              and movie_id = #{movieId}
+    </select>
+
+    <!--删除收藏的视频的信息-->
+    <delete id="delCollectMByUIdAndMId" parameterType="Map">
+        delete from t_collectbox
+        where user_id = #{userId}
+              and movie_id = #{movieId}
+    </delete>
+
+
+    <!--添加用户和角色的之间的关系-->
+    <insert id="addRoleU" parameterType="Map">
+        insert into t_roleu(user_id,role_id)
+        values (#{userId},#{roleId})
+    </insert>
+
+    <delete id="delRoleUByUId" parameterType="string">
+        delete from t_roleu
+        where user_id = #{userId}
+    </delete>
+
+
+
+    <!--添加用户和套餐之间的关系-->
+    <insert id="addUMP" parameterType="Map">
+      insert into t_paydetail (paydetail_id,memPackage_id,user_id,account_id,paydetail_payTime)
+      values (#{payDetailId},${memPackageId},#{userId},#{accountId},#{payDetailPayTime})
+    </insert>
+    <!--删除用户和套餐之间的关系通过用户-->
+    <delete id="delUMPByUserId">
+      delete from t_paydetail
+      where user_id = #{userId}
+    </delete>
+
+    <!--删除用户与相关的信息-->
+    <!---更新用户的删除的状态-->
+    <update id="updateUDelState" parameterType="string">
+        update t_user set user_delState = 1
+        where   user_id = #{userId}
+    </update>
+
+    <!--查询用户的消费详情-->
+    <select id="findUserConsume" parameterType="string" resultType="hashmap">
+      select  tmp.memPackage_price AS customePrice,tp.paydetail_payTime AS customeTime
+      from t_paydetail tp ,t_mempackage tmp
+      where tp.memPackage_id = tmp.memPackage_id
+              and tp.user_id = #{userId}
+    </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

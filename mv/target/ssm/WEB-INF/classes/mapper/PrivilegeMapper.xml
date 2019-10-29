@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xu.dygl.privilege.dao.PrivilegeDao">
+    <resultMap  id="privilegeMap" type="privilege" >
+        <id property="privilegeId" column="privilege_id"/>
+        <result property="privilegeName" column="privilege_name"/>
+        <result property="privilegeNameAs" column="privilege_nameAs"/>
+    </resultMap>
+
+    <insert id="add" parameterType="privilege">
+        insert into t_privilege(privilege_id,privilege_name,privilege_nameAs)
+        values(#{privilegeId},#{privilegeName},#{privilegeNameAs})
+    </insert>
+
+    <delete id="delete" parameterType="string">
+        delete from t_privilege
+        where privilege_id = #{privilegeId}
+    </delete>
+
+    <update id="update" parameterType="privilege">
+        update t_privilege set privilege_name = #{privilegeName},
+                privilege_nameAs = #{privilegeNameAs}
+        where privilege_id = #{privilegeId}
+    </update>
+
+    <select id="findObjectById" parameterType="string"  resultMap="privilegeMap">
+        select *
+        from t_privilege
+        where privilege_id = #{privilegeId}
+    </select>
+
+    <select id="findAll" resultMap="privilegeMap">
+        select *
+        from t_privilege
+    </select>
+
+    <!--通过权限名和权限别名来查数据库中是否有-->
+    <select id="findPriByNameAndAs" parameterType="privilege" resultType="int">
+        select count(*)
+        from t_privilege
+        where privilege_name =#{privilegeName} or privilege_nameAs = #{privilegeNameAs}
+    </select>
+
+    <!--根据名字和别名来查询数据库但是不包括自己-->
+    <select id="findPriAndExcludeSelf" parameterType="privilege" resultType="int">
+        select count(*)
+        from t_privilege
+        where  ( privilege_name =#{privilegeName}
+              or privilege_nameAs = #{privilegeNameAs})
+              and privilege_id != #{privilegeId}
+    </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

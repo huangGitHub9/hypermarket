@@ -1,0 +1,23 @@
+.laytable-cell-1-id {
+	width: 80px;
+}
+
+.laytable-cell-1-privilegeName {
+	width: 150px;
+}
+
+.laytable-cell-1-privilegeNameAs {
+	width: 100px;
+}
+
+.laytable-cell-1-handle {
+	width: 250px;
+}
+
+tr,td {
+	text-align: center;
+}
+
+.layui-table-cell {
+	text-align: center;
+}

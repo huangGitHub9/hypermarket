@@ -1,0 +1,29 @@
+.laytable-cell-1-id {
+	width: 80px;
+}
+.laytable-cell-1-movie-name {
+	width: 100px;
+}
+
+.laytable-cell-1-movie-leaderName {
+	width: 100px;
+}
+
+.laytable-cell-1-palyTime {
+	width: 100px;
+}
+.laytable-cell-1-member{
+	width: 200px;
+}
+
+.laytable-cell-1-handle {
+	width: 200px;
+}
+
+tr,td {
+	text-align: center;
+}
+
+.layui-table-cell {
+	text-align: center;
+}

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xu.dygl.movieGrade.dao.MovieGradeDao">
+    <resultMap  id="movieGradeMap" type="movieGrade" >
+        <id property="movieGradeId" column="movieGrade_id"/>
+        <result property="movieGradeName" column="movieGrade_name"/>
+        <result property="movieGradeImgPath" column="movieGrade_imgPath"/>
+    </resultMap>
+
+    <insert id="add" parameterType="movieGrade">
+        insert into t_moviegrade(movieGrade_id,movieGrade_name,movieGrade_imgPath)
+        values(#{movieGradeId},#{movieGradeName},#{movieGradeImgPath})
+    </insert>
+
+    <delete id="delete" parameterType="string">
+        delete from t_moviegrade
+        where movieGrade_id = #{movieGradeId}
+    </delete>
+
+    <update id="update" parameterType="movieGrade">
+        update t_moviegrade set movieGrade_name = #{movieGradeName},movieGrade_imgPath = #{movieGradeImgPath}
+        where movieGrade_id = #{movieGradeId}
+    </update>
+
+    <select id="findObjectById" parameterType="string"  resultMap="movieGradeMap">
+        select *
+        from  t_moviegrade
+        where movieGrade_id = #{movieGradeId}
+    </select>
+
+    <select id="findAll" resultMap="movieGradeMap">
+        select *
+        from t_moviegrade
+    </select>
+
+    <!--通过权限名和权限别名来查数据库中是否有-->
+    <select id="findMGByName" parameterType="string" resultType="int">
+        select count(*)
+        from t_moviegrade
+        where movieGrade_name =#{movieGradeName}
+    </select>
+
+    <!--根据名字和别名来查询数据库但是不包括自己-->
+    <select id="findMGAndExcludeSelf" parameterType="movieGrade" resultType="int">
+        select count(*)
+        from t_moviegrade
+        where  movieGrade_name =#{movieGradeName}
+               and movieGrade_id != #{movieGradeId}
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

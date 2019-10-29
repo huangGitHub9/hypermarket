@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xu.dygl.role.dao.RoleDao">
+    <resultMap  id="roleMap" type="role" >
+        <id property="roleId" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+
+        <collection property="privilegeList" ofType="cn.xu.dygl.privilege.entity.Privilege">
+            <id property="privilegeId" column="privilege_id"/>
+            <result property="privilegeName" column="privilege_name"/>
+            <result property="privilegeNameAs" column="privilege_nameAs"/>
+        </collection>
+    </resultMap>
+
+    <insert id="add" parameterType="role">
+        insert into t_role(role_id,role_name)
+        values(#{roleId},#{roleName})
+    </insert>
+
+    <delete id="delete" parameterType="string">
+        delete from t_role
+        where role_id = #{roleId}
+    </delete>
+
+    <update id="update" parameterType="role">
+        update t_role set role_name = #{roleName}
+        where role_id = #{roleId}
+    </update>
+
+    <!--根据角色id去查该角色和该角色对应的权限-->
+    <select id="findObjectById" parameterType="string"  resultMap="roleMap">
+        select tr.*,tp.*
+        from  t_role tr,t_privilege tp,t_rolep trp
+        where 	tr.role_id = #{roleId}
+			    and tr.role_id = trp.role_id
+			    and tp.privilege_id = trp.privilege_id
+    </select>
+
+    <select id="findAll" resultMap="roleMap">
+        select *
+        from t_role
+    </select>
+
+    <!--通过权限名和权限别名来查数据库中是否有-->
+    <select id="findRoleByName" parameterType="string" resultType="int">
+        select count(*)
+        from t_role
+        where role_name =#{roleName}
+    </select>
+
+    <!--根据名字和别名来查询数据库但是不包括自己-->
+    <select id="findRoleAndExcludeSelf" parameterType="role" resultType="int">
+        select count(*)
+        from t_role
+        where  role_name =#{roleName}
+              and role_id != #{roleId}
+    </select>
+
+    <!--在t_rolep添加角色与权限的关系-->
+    <insert id="addRoleP" parameterType="Map">
+        insert into t_rolep (role_id,privilege_id)
+        values (#{roleId},#{privilegeId})
+    </insert>
+
+    <!--删除该角色对应的权限-->
+    <delete id="delPByRole" parameterType="Map">
+        delete from t_rolep
+        where role_id = #{roleId} and privilege_id = #{privilegeId}
+    </delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

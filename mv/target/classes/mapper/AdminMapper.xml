@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xu.dygl.admin.dao.AdminDao">
+    <resultMap  id="adminMap" type="admin"  >
+        <id property="adminId" column="admin_id"/>
+        <result property="adminName" column="admin_name"></result>
+        <result property="adminPassword" column="admin_password"></result>
+        <result property="adminGender" column="admin_gender"></result>
+        <result property="adminAge" column="admin_age"></result>
+    </resultMap>
+
+    <select id="findAdminByNameAndPassword" parameterType="Map" resultMap="adminMap">
+      select *
+      from t_admin
+      where admin_name = #{adminName} and admin_password = #{adminPassword}
+    </select>
+
+    <select id="findAccountInfo" resultType="hashmap">
+      select ta.account_balance as accountBalance
+      from t_account ta
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

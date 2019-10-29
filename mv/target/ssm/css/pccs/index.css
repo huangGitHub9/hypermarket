@@ -1,0 +1,83 @@
+
+#fenglei{
+	width: 1180px;
+}
+#fenglei span a{
+	float: left;
+	width: 42px;
+    height: 24px;
+    line-height: 24px;
+    padding: 0 9px;
+    margin: 0 23px 10px 0;
+    white-space: nowrap;
+	text-decoration: none;
+}
+.greenKuang{
+	background-color: #04B872;
+}
+
+#fenglei span a:hover{
+	color: #449D44;
+}
+
+/*显示电影列表*/
+#show_movie_list{
+	width: 1180px;
+	margin: auto;	
+}
+.show_movie_list2{
+	width: 1180px;
+	margin: auto;
+}
+#movie_list{
+	list-style: none;
+	margin-left: -40px;
+}
+.movie_list2{
+	list-style: none;
+	margin-left: -40px;
+}
+
+#movie_list li{
+	float: left;
+}
+.movie_list2 li{
+	float: left;
+}
+.movie_li{
+	width:196px;
+	height: 255px;
+	float: left;
+
+}
+.movie_li a img{
+	display: block;
+	width:160px;
+	height: 212px;
+}
+.movie_li_p_name a{
+	color: #333;
+    text-decoration: none;	
+}
+.movie_li_p_name a:hover{
+    text-decoration: none;	
+}
+
+/*分页*/
+#page_foot{
+	width: 1180px;	
+	margin: auto;
+}
+
+/*设置vip和付费 独播*/
+.mark-v{
+	width: 32px;
+	height: 18px;
+	position: relative;
+	top: -204px;
+	right: -125px;
+
+}
+
+
+

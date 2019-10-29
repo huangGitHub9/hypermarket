@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="hypermarket:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>hypermarket</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="hypermarket.war">
+      <element id="artifact" artifact-name="hypermarket:war exploded" />
+    </root>
+  </artifact>
+</component>

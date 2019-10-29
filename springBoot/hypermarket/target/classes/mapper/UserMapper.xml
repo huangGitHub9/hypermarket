@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ahrtolia.dao.UserMapper">
+
+    <select id="login" resultType="com.ahrtolia.entity.User">
+        select * from user where username = #{username} and password = #{password};
+    </select>
+
+    <select id="findPhone" resultType="com.ahrtolia.entity.User">
+        select * from user where mobile = #{mobile};
+    </select>
+
+    <select id="findFavorite" resultType="com.ahrtolia.entity.Favorite">
+        select * from favorite where userId = #{userId} and productId = #{productId}
+    </select>
+
+    <select id="findUserName" resultType="com.ahrtolia.entity.User">
+        select * from user where username = #{userName}
+    </select>
+
+    <select id="getEmail" resultType="com.ahrtolia.entity.User">
+        select email from user where id = #{id}
+    </select>
+
+    <update id="doAddEmail">
+        update user set email = #{email} where id = #{id};
+    </update>
+
+    <insert id="register" parameterType="com.ahrtolia.entity.User">
+        insert into user (name,username,password,sex,identityCode,email,mobile,fileName) values (#{name},#{username},#{password},#{sex},#{identityCode},#{email},#{mobile},#{fileName});
+    </insert>
+
+    <insert id="weChatAddUser">
+        insert into user (name,username,password,sex,fileName) values (#{name},#{userName},#{password},#{sex},#{fileName});
+    </insert>
+
+    <resultMap id="Orders1" type="com.ahrtolia.entity.Order">
+        <id property="id" column="oId"></id>
+        <result property="count" column="ocount"></result>
+        <association property="product" javaType="com.ahrtolia.entity.Product">
+            <id property="id" column="pId"></id>
+            <result property="name" column="name"></result>
+            <result property="fileName" column="fileName"></result>
+            <result property="price" column="price"></result>
+        </association>
+    </resultMap>
+
+    <select id="getMyHasPayedOrder" resultMap="Orders1">
+        select o.id as oId,o.count as ocount,p.id as pId,p.name as name,p.fileName as fileName,p.price as price
+        from orders o,product p where o.userId= #{userId} and o.productId = p.id  and state = 1;
+    </select>
+
+    <resultMap id="Favorite" type="com.ahrtolia.entity.Favorite">
+        <id property="id" column="fId"></id>
+        <association property="product" javaType="com.ahrtolia.entity.Product">
+            <id property="id" column="pId"></id>
+            <result property="name" column="name"></result>
+            <result property="fileName" column="fileName"></result>
+            <result property="price" column="price"></result>
+        </association>
+    </resultMap>
+
+    <select id="getCollection" resultMap="Favorite">
+        select f.id as fId,p.id as pId,p.name as name,p.count as count,p.fileName as fileName,p.price as price
+        from favorite f,product p where userId = #{userId} and f.productId = p.id;
+    </select>
+
+    <select id="getProductDetaile" resultType="com.ahrtolia.entity.Product">
+        select * from product where id = #{productId}
+    </select>
+
+    <insert id="addToCar">
+        insert into orders (userId,productId,count,state) values  (#{userId},#{productId},#{count},#{state});
+    </insert>
+
+    <insert id="doCollect">
+        insert into favorite (userId,productId) values (#{userId},#{productId});
+    </insert>
+    <!--//<resultMap> 标签底层解析时是一个map集合 如果里面的对象属性完全一致的话会出现覆盖的情况-->
+    <!--所以一定要把id标签加上即使不用  因为id是不重复的-->
+    <resultMap id="Orders" type="com.ahrtolia.entity.Order">
+        <id property="id" column="oId"></id>
+        <result property="count" column="ocount"></result>
+        <association property="product" javaType="com.ahrtolia.entity.Product">
+            <id property="id" column="pId"></id>
+            <result property="name" column="name"></result>
+            <result property="fileName" column="fileName"></result>
+            <result property="price" column="price"></result>
+        </association>
+    </resultMap>
+
+    <select id="getMyProductCar" resultMap="Orders">
+        select o.id as oId,o.count as ocount,p.id as pId,p.name as name,p.fileName as fileName,p.price as price from orders o,product p where o.userId= #{userId} and o.productId = p.id  and state = 0;
+    </select>
+
+    <select id="getMyOrderCar" resultMap="Orders">
+        select o.id as oId,o.count as ocount,p.id as pId,p.name as name,p.fileName as fileName,p.price as price from orders o,product p where o.userId= #{userId} and o.productId = p.id  and state = 2;
+    </select>
+    <!--更新商品订单-->
+    <select id="getOrder" resultMap="Orders">
+        select o.id as oId,o.count as ocount,p.id as pId,p.name as name,p.fileName as fileName,p.price as price from orders o,product p where o.userId= #{userId} and o.productId = p.id  and state = 2;
+    </select>
+    <!--批量选择购物车商品-->
+    <update id="findProductIds">
+        update orders set state = 2 where userId = #{userId} and productId = #{pids} and state = 0;
+    </update>
+
+    <!--删除未付款订单或者购物车订单-->
+    <delete id="deleteCarProduct">
+        delete from orders where id = #{orderId};
+    </delete>
+
+    <update id="updateOrderCount">
+        update orders set count = #{count} where id = #{orderId};
+    </update>
+
+    <update id="addCarCount">
+        update orders set count = #{count} where userId = #{userId} and productId = #{productId} and state = 0;
+    </update>
+
+    <delete id="remove">
+        delete from favorite where id = #{favoriteId};
+    </delete>
+
+    <select id="getUserAddress" resultType="com.ahrtolia.entity.UserAddress">
+      select * from useraddress where userId = #{userId} and states= 2;
+    </select>
+
+    <!--获取所有历史地址（不包括默认地址）-->
+    <select id="getAllAddress" resultType="com.ahrtolia.entity.UserAddress">
+        select * from useraddress where userId = #{userId} and states= 1;
+    </select>
+
+    <!--逻辑删除默认地址-->
+    <update id="deleteAddress">
+        update useraddress set states = 1 where id= #{id};
+    </update>
+
+    <!--添加默认地址-->
+    <update id="addDeleteAddress">
+        update useraddress set states = 2 where id= #{id};
+    </update>
+
+    <insert id="addNewAddress">
+        insert into useraddress (userId,address,states) values (#{userId},#{address},2);
+    </insert>
+
+    <!--添加邮箱代码-->
+    <update id="saveActiveCode">
+        update user set activeCode = #{activeCode} where id = #{id};
+    </update>
+
+    <update id="updateOrder">
+        update orders set creatTime = #{createTime}, serialNumber = #{serialNumber}, useraddressId = #{addressId} where userId = #{userId} and state = 2;
+    </update>
+
+    <select id="getUserById" resultType="com.ahrtolia.entity.User">
+        select * from user where id = #{id};
+    </select>
+
+    <update id="updateActiveCode">
+        update user set activeCode = 1 where id = #{id};
+    </update>
+
+    <!--支付后更改订单状态
+    state ：0-处于购物车的状态 1-处于已付款订单的状态 2-处于未付款的状态
+    -->
+    <update id="updateOrderPayState">
+        update orders set state = 1 where serialNumber = #{serialNumber} and state = 2;
+    </update>
+
+    <select id="getSerialNumber" resultType="String">
+        select serialNumber from orders where id = #{orderId};
+    </select>
+
+    <!--states区别state：state是商品的状态，states是收货地还的状态
+    states 默认值为1，表示为用户过的收货地址，2表示为默认收货地址，0表示为该地址已经删除
+    -->
+    <select id="getOrderAddress" resultType="String">
+        select address from useraddress where userId = #{userId} and states = 2;
+    </select>
+
+    <select id="getOrderCount" resultType="com.ahrtolia.entity.Order">
+        select * from orders where userId = #{userId} and productId = #{productId} and state = 0;
+    </select>
+
+    <!--更新图片-->
+    <update id="modifyUserPhoto">
+        update user set fileName=#{fileName} where id=#{id}
+    </update>
+</mapper>

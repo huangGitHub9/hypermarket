@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xu.dygl.movieType.dao.MovieTypeDao">
+    <resultMap  id="movieTypeMap" type="movieType" >
+        <id property="movieTypeId" column="movieType_id"/>
+        <result property="movieTypeName" column="movieType_name"/>
+    </resultMap>
+
+    <!--添加电影类型-->
+    <insert id="add" parameterType="movieType">
+        insert into t_movietype(movieType_id,movieType_name)
+        values(#{movieTypeId},#{movieTypeName})
+    </insert>
+
+    <!--删除电影类型-->
+    <delete id="delete" parameterType="string">
+        delete from t_movietype
+        where movieType_id = #{movieTypeId}
+    </delete>
+
+    <!--更新电影类型-->
+    <update id="update" parameterType="Map">
+        update t_movietype set movieType_name = #{movieTypeName}
+        where movieType_id = #{movieTypeId}
+    </update>
+
+    <!--查询所有的电影类型-->
+    <select id="findAll" resultMap="movieTypeMap">
+        select *
+        from t_movietype
+    </select>
+
+    <!--根据id来查询该电影类型-->
+    <select id="findObjectById" parameterType="string" resultMap="movieTypeMap">
+        select *
+        from t_movietype
+        where movieType_id = #{movieTypeId}
+    </select>
+
+    <!--查询电影类型不包括自己-->
+    <select id="findMovieTypeExcludeSelf" resultType="int" parameterType="Map">
+        select count(*)
+        from t_movietype
+        where movieType_name = #{movieTypeName}
+             and  movieType_id != #{movieTypeId}
+    </select>
+
+    <!--电影类型分分页查询-->
+    <select id="findAllByPaging" parameterType="Map" resultMap="movieTypeMap">
+        select *
+        from t_movietype
+        <where>
+            <if test="movieTypeName != null">
+                and movieType_name like #{movieTypeName}
+            </if>
+        </where>
+        limit #{pCur},#{pSize}
+    </select>
+
+    <!--得到该查询条件的查询记录总和-->
+    <select id="getTotalCounts" parameterType="Map" resultType="int">
+        select count(*)
+        from t_movietype
+        <where>
+            <!--test：是map中的key-->
+            <if test="movieTypeName != null">
+                and movieType_name like #{movieTypeName}
+            </if>
+        </where>
+    </select>
+    
+    <!--根据电影的id来查询所有属的分类-->
+    <select id="findMovieTypeByMovieId" parameterType="string" resultMap="movieTypeMap">
+        select tmp.*
+        from   t_mmovietype tmm , t_movietype tmp
+        where tmm.movie_id = #{movieId}
+		      and tmm.movieType_id = tmp.movieType_id
+
+    </select>
+
+    <!--查询视频类型的视频的点击的总次数-->
+    <select id="movieTypeClickCounts" resultType="hashmap">
+        select tmp.movieType_name as movieTypeName,sum(tm.movie_clickCount) as clickCounts
+        from t_movie tm,t_movietype tmp ,t_mmovietype tmmp
+        where tmmp.movieType_id = tmp.movieType_id
+                    and		tmmp.movie_id = tm.movie_id
+        group by tmp.movieType_name
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

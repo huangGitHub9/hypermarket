@@ -1,0 +1,33 @@
+#player-viedo-wrap{
+	overflow: hidden;
+	width:800px ;
+	height:600px ;
+	margin-top: -40px;
+	margin-left: -5px;
+	position: relative;
+
+}
+
+.video-danmo{
+	height: 28px;
+	/*//border: red solid 1px;*/	
+	position: absolute;
+	display: inline-block;
+	font-size: 18px;
+	font-weight: bold;
+}
+.alert_content{
+	width: 250px;
+	height: 28px;
+	line-height: 28px;
+	color:white;
+	font-size: 14px;
+	position: relative;
+	top: -60px;
+	/*background-color: #140908;*/
+}
+ video{
+	 object-fit: fill;
+	 width: 800px;
+	 height: 600px;
+ }

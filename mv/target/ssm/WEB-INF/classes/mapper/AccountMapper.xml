@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xu.dygl.account.dao.AccountDao">
+<resultMap  id="accountMap" type="account" >
+    <id property="accountId" column="account_id"/>
+    <result property="accountBalance" column="account_balance"/>
+</resultMap>
+
+<!--向账户打钱-->
+<update id="update" parameterType="account">
+        update t_account set account_balance = account_balance + #{accountBalance}
+        where account_id = #{accountId}
+    </update>
+
+<select id="findAccountById" resultMap="accountMap">
+      select *
+      from t_account
+      where account_id = #{accountId}
+    </select>
+
+</mapper>

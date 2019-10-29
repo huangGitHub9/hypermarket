@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xu.dygl.history.dao.HistoryDao">
+    <resultMap  id="historyMap" type="history" >
+        <id property="historyId" column="history_id"/>
+        <result property="historyDate" column="history_date"/>
+        <!--多对一 resultMap:别名+resultMap的id名-->
+        <association property="user"  javaType="cn.xu.dygl.user.entity.User">
+            <id property="userId" column="user_id"/>
+            <result property="userName" column="user_name"></result>
+            <result property="userPassword" column="user_password"></result>
+            <result property="userBirthday" column="user_birthday"></result>
+            <result property="userGender" column="user_gender"></result>
+            <result property="userAge" column="user_age"></result>
+            <result property="userHeadImgPath" column="user_headImgPath"></result>
+            <result property="userHeadImgName" column="user_headImgName"></result>
+
+        </association>
+        <association property="movie" javaType="cn.xu.dygl.movie.entity.Movie">
+            <id property="movieId" column="movie_id"/>
+            <result property="movieTime" column="movie_time"></result>
+            <result property="movieClickCount" column="movie_clickCount"></result>
+            <result property="movieDirector" column="movie_director"></result>
+            <result property="movieProtagonist" column="movie_protagonist"></result>
+            <result property="movieIntro" column="movie_intro"></result>
+            <result property="movieName" column="movie_name"></result>
+            <result property="moviePath" column="movie_Path"></result>
+            <result property="movieImgName" column="movie_imgName"></result>
+            <result property="movieImgPath" column="movie_imgPath"></result>
+
+        </association>
+    </resultMap>
+
+
+
+
+    <!--添加用户的浏览的历史的记录-->
+    <insert id="addHistroryRecord" parameterType="Map">
+        insert into t_history(history_id,history_date,user_id,movie_Id)
+        values(#{historyId},#{historyDate},#{userId},#{movieId})
+    </insert>
+
+    <!--根据用户id和电影id判断该历史记录是否存在-->
+    <select id="findHByUidAndMId" parameterType="Map" resultType="int">
+        select count(*)
+        from t_history
+        where user_id =#{userId} and movie_id = #{movieId}
+    </select>
+
+    <!--根据uid和mid删除用户的浏览记录-->
+    <delete id="delHByUidAndMid" parameterType="Map">
+        delete from t_history
+        where user_id =#{userId} and movie_id = #{movieId}
+    </delete>
+
+    <!--清空该用户的浏览记录-->
+    <delete id="clearHByUid" parameterType="string">
+        delete from t_history
+        where user_id =#{userId}
+    </delete>
+
+   <!--查找该用户的浏览记录根据uid-->
+    <select id="findAllHByUid" parameterType="string" resultMap="historyMap">
+        select *
+        from t_user tu , t_history th, t_movie tm
+        where
+                tu.user_id = #{userId}
+                and th.user_id = tu.user_id
+                and th.movie_id = tm.movie_id
+    </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

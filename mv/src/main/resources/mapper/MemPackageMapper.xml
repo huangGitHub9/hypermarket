@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xu.dygl.memPackage.dao.MemPackageDao">
+    <resultMap  id="memPackageMap" type="memPackage" >
+        <id property="memPackageId" column="memPackage_id"/>
+        <result property="memPackageMonth" column="memPackage_month"/>
+        <result property="memPackagePrice" column="memPackage_price"/>
+        <result property="memPackageDiscount" column="memPackage_discount"/>
+        <result property="memPackageResPrice" column="memPackage_resPrice"/>
+
+    </resultMap>
+
+    <insert id="add" parameterType="memPackage">
+        insert into t_mempackage(mempackage_id,memPackage_month,memPackage_price,
+                                  memPackage_discount,memPackage_resPrice)
+        values(#{memPackageId},#{memPackageMonth},#{memPackagePrice},#{memPackageDiscount},#{memPackageResPrice})
+    </insert>
+
+    <delete id="delete" parameterType="string">
+        delete from t_mempackage
+        where mempackage_id = #{memPackageId}
+    </delete>
+
+    <update id="update" parameterType="memPackage">
+        update t_mempackage
+        set memPackage_month=#{memPackageMonth},memPackage_price=#{memPackagePrice}
+            ,memPackage_discount = #{memPackageDiscount},memPackage_resPrice=#{memPackageResPrice}
+        where mempackage_id = #{memPackageId}
+    </update>
+
+    <select id="findObjectById" parameterType="string"  resultMap="memPackageMap">
+        select *
+        from  t_mempackage
+        where mempackage_id = #{memPackageId}
+    </select>
+
+    <select id="findAll" resultMap="memPackageMap">
+        select *
+        from t_mempackage
+        order by memPackage_month ASC
+    </select>
+
+    <!--查找会员套餐通过月份和价钱-->
+    <select id="findMemPByMP" parameterType="int" resultType="int">
+        select count(*)
+        from t_mempackage
+        where   memPackage_month=#{memPackageMonth}
+    </select>
+
+    <select id="findMemPByPrice" parameterType="double" resultType="string">
+        select mempackage_id
+        from t_mempackage
+        where   memPackage_price=#{memPackagePrice}
+    </select>
+    <!--根据月份和价钱来查询数据库但是不包括自己-->
+    <select id="findMemPAndExcludeSelf" parameterType="memPackage" resultType="int">
+        select count(*)
+        from t_mempackage
+        where   memPackage_month=#{memPackageMonth}
+              and mempackage_id != #{memPackageId}
+    </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
