@@ -316,7 +316,7 @@ public class UserHandler {
         String address = userService.getOrderAddress(userId);
         /*****************************生成支付二维码*******************************/
         DataJoinUtils dataJoinUtils = new DataJoinUtils();
-        Map<String, String> result = dataJoinUtils.wxPay("http://localhost:80/main/getAll.action", serialNumber, "1", "127.0.0.1", "海玩商品");
+        Map<String, String> result = dataJoinUtils.wxPay("http://localhost:80/main/getAll.action", serialNumber, "1", "127.0.0.1", "海玩");
         //将二维码地址封装至order对象中
         session.setAttribute("recommendCode", result.get("code_url"));
         session.setAttribute("newAddress", address);
@@ -345,7 +345,7 @@ public class UserHandler {
                     userService.updateOrderPayState(orderNo);
                     break;
                 }
-                Thread.sleep(3000);
+                Thread.sleep(4000);
                 num++;
                 if (num >= 10) {
                     tip = "支付超时";
@@ -473,10 +473,10 @@ public class UserHandler {
     //发送邮件
     @ResponseBody
     @RequestMapping(value = "/active.action",produces={"allpication/text;charset=utf-8"})
-    public String active(int id,HttpSession session){
+    public String active(@RequestParam("id")int id,HttpSession session){
         //判断是否绑定邮箱
         User user = userService.getEmail(id);
-        if (user.getEmail() == null || user.getEmail().equals("")) {
+        if (user == null || user.getEmail().equals("")) {
             return "请您先绑定邮箱！";
         }else{
             try {
@@ -553,7 +553,7 @@ public class UserHandler {
         int id = ((User) session.getAttribute("user")).getId();
         //判断是否绑定邮箱
         User user = userService.getEmail(id);
-        if (user.getEmail() == null || user.getEmail().equals("")) {
+        if (user == null || user.getEmail().equals("")) {
             String result = userService.addEmail(id,email);
             return result;
         }else{
@@ -567,7 +567,7 @@ public class UserHandler {
         int id = ((User) session.getAttribute("user")).getId();
         //判断是否绑定邮箱
         User user = userService.getEmail(id);
-        if (user.getEmail() == null || user.getEmail().equals("")) {
+        if (user == null || user.getEmail().equals("")) {
             String emailCodeandemail = emailCode + email;
             if(request.getSession().getAttribute("emailCodes").equals(emailCodeandemail)){
                 //绑定邮箱

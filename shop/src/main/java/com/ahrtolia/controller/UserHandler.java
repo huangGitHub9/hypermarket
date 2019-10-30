@@ -498,7 +498,7 @@ public class UserHandler {
     public String active(int id,HttpSession session){
         //判断是否绑定邮箱
         User user = userService.getEmail(id);
-        if (user.getEmail() == null || user.getEmail().equals("")) {
+        if (user == null || user.getEmail().equals("")) {
             return "请您先绑定邮箱！";
         }else{
             try {
@@ -585,7 +585,7 @@ public class UserHandler {
         int id = ((User) session.getAttribute("user")).getId();
         //判断是否绑定邮箱
         User user = userService.getEmail(id);
-        if (user.getEmail() == null || user.getEmail().equals("")) {
+        if (user == null || user.getEmail().equals("")) {
             String result = userService.addEmail(id,email);
             return result;
         }else{
@@ -599,7 +599,7 @@ public class UserHandler {
         int id = ((User) session.getAttribute("user")).getId();
         //判断是否绑定邮箱
         User user = userService.getEmail(id);
-        if (user.getEmail() == null || user.getEmail().equals("")) {
+        if (user == null || user.getEmail().equals("")) {
             String emailCodeandemail = emailCode + email;
             if(request.getSession().getAttribute("emailCodes").equals(emailCodeandemail)){
                 //绑定邮箱

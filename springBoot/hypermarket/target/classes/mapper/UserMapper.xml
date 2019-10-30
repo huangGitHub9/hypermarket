@@ -27,7 +27,7 @@
     </update>
 
     <insert id="register" parameterType="com.ahrtolia.entity.User">
-        insert into user (name,username,password,sex,identityCode,email,mobile,fileName) values (#{name},#{username},#{password},#{sex},#{identityCode},#{email},#{mobile},#{fileName});
+        insert into user (name,username,password,sex,identityCode,email,mobile,fileName) values (#{name},#{userName},#{password},#{sex},#{identityCode},#{email},#{mobile},#{fileName});
     </insert>
 
     <insert id="weChatAddUser">
