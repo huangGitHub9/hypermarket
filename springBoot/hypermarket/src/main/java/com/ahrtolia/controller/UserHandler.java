@@ -492,8 +492,8 @@ public class UserHandler {
 
     //邮件认证
     @RequestMapping("/doActive.action")
-    public String doActive(@RequestParam("activeCode") String activeCode,HttpSession session){
-        if (activeCode != null) {
+    public String doActive(String activeCode,HttpSession session){
+        if (activeCode.equals("2")) {
             int id = ((User) session.getAttribute("user")).getId();
             userService.updateActiveCode(id);
             User userByActiveCode = userService.getUserById(id);
